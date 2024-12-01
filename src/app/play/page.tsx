@@ -2,7 +2,7 @@
 import useTetris from "@/hooks/useTetris";
 
 export default function Play() {
-  const {field} = useTetris();
+  const {field, createMino} = useTetris();
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="pt-28">
@@ -20,6 +20,7 @@ export default function Play() {
           </div>
         ))}
       </div>
+      <button onClick={createMino}>click</button>
     </div>
   )
 }
