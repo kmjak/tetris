@@ -68,7 +68,7 @@ export default function useTetris() {
           [0, 0, 0, 0],
           [1, 1, 1, 1],
         ];
-        mino.color = "aqua";
+        mino.color = "cyan";
         break;
       case 1:
         mino.blocks = [
