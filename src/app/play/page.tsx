@@ -18,7 +18,7 @@ export default function Play() {
                 className={clsx(
                   'w-6 h-6 border box-border -m-px border-gray-500',
                   {
-                    'bg-white': cell === 1,
+                    'bg-white': cell === -1,
                     [`bg-${mino.color}-500 border-black`]: cell === mino.id,
                   },
                 )}
