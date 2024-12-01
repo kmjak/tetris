@@ -1,4 +1,5 @@
 interface MinoType {
+  id: number;
   blocks: number[][];
   route: number;
   x: number;

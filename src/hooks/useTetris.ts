@@ -11,6 +11,7 @@ export default function useTetris() {
       [0, 0, 0, 0],
       [0, 0, 0, 0],
     ],
+    id: -2,
     route: 0,
     x: 4,
     y: 1,
@@ -58,6 +59,7 @@ export default function useTetris() {
   }
   const createMino = async (): Promise<void> => {
     const pattern = await getRandomPattern();
+    mino.id = pattern + 1;
     switch (pattern) {
       case 0:
         mino.blocks = [
@@ -72,8 +74,8 @@ export default function useTetris() {
         mino.blocks = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
-          [0, 1, 1, 0],
-          [0, 1, 1, 0],
+          [0, 2, 2, 0],
+          [0, 2, 2, 0],
         ];
         mino.color = "yellow";
         break;
@@ -81,8 +83,8 @@ export default function useTetris() {
         mino.blocks = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
-          [0, 1, 1, 0],
-          [0, 0, 1, 1],
+          [0, 3, 3, 0],
+          [0, 0, 3, 3],
         ];
         mino.color = "green";
         break;
@@ -90,26 +92,26 @@ export default function useTetris() {
         mino.blocks = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
-          [0, 1, 1, 0],
-          [1, 1, 0, 0],
+          [0, 4, 4, 0],
+          [4, 4, 0, 0],
         ];
         mino.color = "red";
         break;
       case 4:
         mino.blocks = [
           [0, 0, 0, 0],
-          [0, 0, 1, 0],
-          [0, 0, 1, 0],
-          [0, 1, 1, 0],
+          [0, 0, 5, 0],
+          [0, 0, 5, 0],
+          [0, 5, 5, 0],
         ];
         mino.color = "blue";
         break;
       case 5:
         mino.blocks = [
           [0, 0, 0, 0],
-          [0, 1, 0, 0],
-          [0, 1, 0, 0],
-          [0, 1, 1, 0],
+          [0, 6, 0, 0],
+          [0, 6, 0, 0],
+          [0, 6, 6, 0],
         ];
         mino.color = "orange";
         break;
@@ -117,8 +119,8 @@ export default function useTetris() {
         mino.blocks = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
-          [0, 0, 1, 0],
-          [0, 1, 1, 1],
+          [0, 0, 7, 0],
+          [0, 7, 7, 7],
         ];
         mino.color = "purple";
         break;
@@ -158,5 +160,6 @@ export default function useTetris() {
   return {
     field,
     createMino,
+    mino,
   };
 }
