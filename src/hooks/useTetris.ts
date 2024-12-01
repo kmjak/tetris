@@ -43,8 +43,8 @@ export default function useTetris() {
     [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
   ]);
 
-  const getRandomPattern = async () => {
-    return Math.floor(Math.random() * mino_count);
+  const getRandomMinoId = async () => {
+    return Math.floor(Math.random() * mino_count) + 1;
   }
 
   const isAlive = async (move:string):Promise<boolean> => {
@@ -58,10 +58,10 @@ export default function useTetris() {
     return true;
   }
   const createMino = async (): Promise<void> => {
-    const pattern = await getRandomPattern();
-    mino.id = pattern + 1;
+    const pattern = await getRandomMinoId();
+    mino.id = pattern;
     switch (pattern) {
-      case 0:
+      case 1:
         mino.blocks = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
@@ -70,7 +70,7 @@ export default function useTetris() {
         ];
         mino.color = "cyan";
         break;
-      case 1:
+      case 2:
         mino.blocks = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
@@ -79,7 +79,7 @@ export default function useTetris() {
         ];
         mino.color = "yellow";
         break;
-      case 2:
+      case 3:
         mino.blocks = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
@@ -88,7 +88,7 @@ export default function useTetris() {
         ];
         mino.color = "green";
         break;
-      case 3:
+      case 4:
         mino.blocks = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
@@ -97,7 +97,7 @@ export default function useTetris() {
         ];
         mino.color = "red";
         break;
-      case 4:
+      case 5:
         mino.blocks = [
           [0, 0, 0, 0],
           [0, 0, 5, 0],
@@ -106,7 +106,7 @@ export default function useTetris() {
         ];
         mino.color = "blue";
         break;
-      case 5:
+      case 6:
         mino.blocks = [
           [0, 0, 0, 0],
           [0, 6, 0, 0],
@@ -115,7 +115,7 @@ export default function useTetris() {
         ];
         mino.color = "orange";
         break;
-      case 6:
+      case 7:
         mino.blocks = [
           [0, 0, 0, 0],
           [0, 0, 0, 0],
