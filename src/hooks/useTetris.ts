@@ -1,5 +1,5 @@
 import MinoType from "@/types/minoType";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function useTetris() {
   const mino_count = 7;
@@ -57,6 +57,39 @@ export default function useTetris() {
     }
     return true;
   }
+
+  const handleKeyDown = useCallback((e:KeyboardEvent) => {
+    console.log(mino.x);
+    switch (e.key) {
+      case "a":
+        if (mino.x > 0) {
+          mino.x--;
+        }
+        break;
+      case "d":
+        if (mino.x + mino.blocks[0].length < field[0].length) {
+          mino.x++;
+        }
+        break;
+      case "s":
+        if (mino.y + mino.blocks.length < field.length) {
+          mino.y++;
+        }
+        break;
+      default:
+        break;
+    }
+    setMino({...mino});
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleKeyDown]);
+
+
   const createMino = async (): Promise<void> => {
     const pattern = await getRandomMinoId();
     mino.id = pattern;
@@ -142,7 +175,6 @@ export default function useTetris() {
         setField([...field]);
         setTimeout(async () => {
           const res = await isAlive("down")
-          console.log(res);
           if(res === false) {
             mino.blocks.forEach((row, y) => {
               row.forEach((cell, x) => {
