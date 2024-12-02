@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 
 export default function useTetris() {
   const mino_count = 7;
-  const [isFalling, setIsFalling] = useState<boolean>(false);
   const [mino, setMino] = useState<MinoType>({
     blocks: [
       [0, 0, 0, 0],
@@ -79,6 +78,9 @@ export default function useTetris() {
       default:
         break;
     }
+    mino.route = 0
+    mino.x = 4
+    mino.y = 1
     setMino({...mino});
   }, []);
 
@@ -161,44 +163,46 @@ export default function useTetris() {
         break;
     }
     setMino({...mino});
-    setIsFalling(true);
   }
 
-  useEffect(() => {
-    if (isFalling) {
-      const draw = async ():Promise<void> =>{
+  const startGame = async (isAliveMino:boolean) => {
+    if(isAliveMino === false) {
+      console.log("createMino");
+      await createMino();
+      console.log(mino)
+      isAliveMino = true;
+    }
+    console.log("startGame");
+    mino.blocks.forEach((row, y) => {
+      row.forEach((cell, x) => {
+        field[y+mino.y][x + mino.x] = cell;
+      });
+    });
+    setField([...field]);
+    setTimeout(async () => {
+      const res = await isAlive("down")
+      if(res === false) {
         mino.blocks.forEach((row, y) => {
           row.forEach((cell, x) => {
-            field[y+mino.y][x + mino.x] = cell;
+            if (cell !== 0) {
+              field[y+mino.y-1][x + mino.x] = -1;
+            }
           });
         });
         setField([...field]);
-        setTimeout(async () => {
-          const res = await isAlive("down")
-          if(res === false) {
-            mino.blocks.forEach((row, y) => {
-              row.forEach((cell, x) => {
-                if (cell !== 0) {
-                  field[y+mino.y-1][x + mino.x] = -1;
-                }
-              });
-            });
-            setIsFalling(false);
-            return;
-          }
-          draw()
-        }
-        , mino.speed);
-        mino.y++;
-        setMino({...mino});
+        return;
       }
-      draw();
+      startGame(isAliveMino);
     }
-  }, [isFalling]);
+    , mino.speed);
+    mino.y++;
+    setMino({...mino});
+  }
 
   return {
     field,
     createMino,
+    startGame,
     mino,
   };
 }
