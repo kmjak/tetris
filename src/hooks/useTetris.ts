@@ -18,7 +18,7 @@ export default function useTetris() {
     // speed: 1000,
     speed: 100,
   });
-  const [field,setField] = useState<number[][]>([
+  const defaultField = [
     [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
     [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
     [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
@@ -40,7 +40,8 @@ export default function useTetris() {
     [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
     [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
     [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-  ]);
+  ]
+  const [field,setField] = useState<number[][]>(defaultField);
 
   const getRandomMinoId = async () => {
     return Math.floor(Math.random() * mino_count) + 1;
@@ -58,7 +59,6 @@ export default function useTetris() {
   }
 
   const handleKeyDown = useCallback((e:KeyboardEvent) => {
-    console.log(mino.x);
     switch (e.key) {
       case "a":
         if (mino.x > 0) {
@@ -165,33 +165,39 @@ export default function useTetris() {
     setMino({...mino});
   }
 
-  const startGame = async (isAliveMino:boolean) => {
-    if(isAliveMino === false) {
-      console.log("createMino");
-      await createMino();
-      console.log(mino)
-      isAliveMino = true;
-    }
+  const drawField = async (new_field:number[][]) => {
+    const newField = new_field.map((row) => [...row]);
     mino.blocks.forEach((row, y) => {
       row.forEach((cell, x) => {
-        field[y+mino.y][x + mino.x] = cell;
+        if (cell !== 0) {
+          newField[y+mino.y][x + mino.x] = cell;
+        }
       });
     });
-    setField([...field]);
+    setField(newField);
+  }
+
+  const startGame = async (isAliveMino:boolean) => {
+    if(isAliveMino === false) {
+      await createMino();
+      isAliveMino = true;
+    }
+    setField(defaultField);
+    await drawField(defaultField);
     setTimeout(async () => {
       const res = await isAlive("down")
       if(res === false) {
         mino.blocks.forEach((row, y) => {
           row.forEach((cell, x) => {
             if (cell !== 0) {
-              field[y+mino.y-1][x + mino.x] = -1;
+              defaultField[y+mino.y-1][x + mino.x] = -1;
             }
           });
         });
-        setField([...field]);
+        setField(defaultField);
         isAliveMino = false;
       }
-      startGame(isAliveMino);
+      await startGame(isAliveMino);
     }
     , mino.speed);
     mino.y++;

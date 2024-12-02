@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { useEffect } from "react";
 
 export default function Play() {
-  const {field, createMino, startGame, mino} = useTetris();
+  const {field, startGame, mino} = useTetris();
   useEffect(() => {
     const start = async () => {
       await startGame(false);
@@ -34,7 +34,6 @@ export default function Play() {
           </div>
         ))}
       </div>
-      <button onClick={createMino}>click</button>
     </div>
   )
 }
