@@ -78,9 +78,6 @@ export default function useTetris() {
       default:
         break;
     }
-    mino.route = 0
-    mino.x = 4
-    mino.y = 1
     setMino({...mino});
   }, []);
 
@@ -162,6 +159,9 @@ export default function useTetris() {
       default:
         break;
     }
+    mino.route = 0
+    mino.x = 4
+    mino.y = 1
     setMino({...mino});
   }
 
@@ -172,7 +172,6 @@ export default function useTetris() {
       console.log(mino)
       isAliveMino = true;
     }
-    console.log("startGame");
     mino.blocks.forEach((row, y) => {
       row.forEach((cell, x) => {
         field[y+mino.y][x + mino.x] = cell;
@@ -190,7 +189,7 @@ export default function useTetris() {
           });
         });
         setField([...field]);
-        return;
+        isAliveMino = false;
       }
       startGame(isAliveMino);
     }
