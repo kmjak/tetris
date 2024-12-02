@@ -184,6 +184,8 @@ export default function useTetris() {
     }
     setField(defaultField);
     await drawField(defaultField);
+    mino.y++;
+    setMino({...mino});
     setTimeout(async () => {
       const res = await isAlive("down")
       if(res === false) {
@@ -200,8 +202,6 @@ export default function useTetris() {
       await startGame(isAliveMino);
     }
     , mino.speed);
-    mino.y++;
-    setMino({...mino});
   }
 
   return {
