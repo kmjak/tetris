@@ -3,7 +3,7 @@ import MinoType from "@/types/minoType";
 import { useCallback, useEffect, useState } from "react";
 
 export default function useTetris() {
-  const mino_count = 2;
+  const mino_count = 7;
   const [mino, setMino] = useState<MinoType>({
     blocks: [],
     id: -2,
