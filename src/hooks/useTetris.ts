@@ -44,18 +44,26 @@ export default function useTetris() {
   }
 
   const isAlive = async (move:string):Promise<boolean> => {
+    let res = true
     switch (move) {
       case "down":
-        if (mino.y + mino.blocks.length >= field.length) {
-          return false;
-        }
+        mino.blocks.map((block:BlockType) => {
+          if(defaultField[mino.y + block.y][mino.x + block.x] !== 0){
+            res = false;
+          }
+        })
         break;
     }
-    return true;
+    return res;
   }
 
-  const handleKeyDown = useCallback((e:KeyboardEvent) => {
+  const handleKeyDown = useCallback(async (e:KeyboardEvent) => {
     switch (e.key) {
+      case "s":
+        if(await isAlive("down")) {
+          mino.y++;
+        }
+        break;
       default:
         break;
     }
@@ -128,8 +136,7 @@ export default function useTetris() {
     mino.y++;
     setMino({...mino});
     setTimeout(async () => {
-      const res = await isAlive("down")
-      if(res === false) {
+      if(await isAlive("down") === false) {
         mino.blocks.map((block:BlockType) => {
           defaultField[mino.y + block.y-1][mino.x + block.x] = -1;
         });
