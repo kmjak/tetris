@@ -53,6 +53,20 @@ export default function useTetris() {
           }
         })
         break;
+      case "left":
+        mino.blocks.map((block:BlockType) => {
+          if(defaultField[mino.y + block.y][mino.x + block.x - 1] !== 0){
+            res = false;
+          }
+        })
+        break;
+      case "right":
+        mino.blocks.map((block:BlockType) => {
+          if(defaultField[mino.y + block.y][mino.x + block.x + 1] !== 0){
+            res = false;
+          }
+        })
+        break;
     }
     return res;
   }
@@ -62,6 +76,16 @@ export default function useTetris() {
       case "s":
         if(await isAlive("down")) {
           mino.y++;
+        }
+        break;
+      case "a":
+        if(await isAlive("left")) {
+          mino.x--;
+        }
+        break;
+      case "d":
+        if(await isAlive("right")) {
+          mino.x++;
         }
         break;
       default:
