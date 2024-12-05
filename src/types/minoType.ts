@@ -1,6 +1,8 @@
+import BlockType from "@/types/blockType";
+
 interface MinoType {
   id: number;
-  blocks: number[][];
+  blocks: BlockType[]
   route: number;
   x: number;
   y: number;
