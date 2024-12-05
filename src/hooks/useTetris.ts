@@ -3,7 +3,7 @@ import MinoType from "@/types/minoType";
 import { useCallback, useEffect, useState } from "react";
 
 export default function useTetris() {
-  const mino_count = 7;
+  const mino_count = 2;
   const [mino, setMino] = useState<MinoType>({
     blocks: [],
     id: -2,
@@ -88,6 +88,22 @@ export default function useTetris() {
           mino.x++;
         }
         break;
+      case "j":
+        mino.route = (mino.route + 3) % 4;
+        mino.blocks.map((block:BlockType) => {
+          const tmp = block.x;
+          block.x = block.y;
+          block.y = -tmp;
+        });
+        break;
+      case "k":
+        mino.route = (mino.route + 1) % 4;
+        mino.blocks.map((block:BlockType) => {
+          const tmp = block.x;
+          block.x = -block.y;
+          block.y = tmp;
+        });
+        break
       default:
         break;
     }
