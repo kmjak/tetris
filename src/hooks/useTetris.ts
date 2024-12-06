@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 export default function useTetris() {
   const mino_count = 7;
+  const pressedKeys = new Set<string>();
   const [mino, setMino] = useState<MinoType>({
     blocks: [],
     id: -2,
@@ -71,26 +72,28 @@ export default function useTetris() {
     return res;
   }
 
-  const handleKeyDown = useCallback(async (e:KeyboardEvent) => {
+  const handleKeyDown = useCallback(async (e: KeyboardEvent) => {
+    if (pressedKeys.has(e.key)) return;
+    pressedKeys.add(e.key);
     switch (e.key) {
       case "s":
-        if(await isAlive("down")) {
+        if (await isAlive("down")) {
           mino.y++;
         }
         break;
       case "a":
-        if(await isAlive("left")) {
+        if (await isAlive("left")) {
           mino.x--;
         }
         break;
       case "d":
-        if(await isAlive("right")) {
+        if (await isAlive("right")) {
           mino.x++;
         }
         break;
       case "j":
         mino.route = (mino.route + 3) % 4;
-        mino.blocks.map((block:BlockType) => {
+        mino.blocks.forEach((block: BlockType) => {
           const tmp = block.x;
           block.x = block.y;
           block.y = -tmp;
@@ -98,25 +101,31 @@ export default function useTetris() {
         break;
       case "k":
         mino.route = (mino.route + 1) % 4;
-        mino.blocks.map((block:BlockType) => {
+        mino.blocks.forEach((block: BlockType) => {
           const tmp = block.x;
           block.x = -block.y;
           block.y = tmp;
         });
-        break
+        break;
       default:
         break;
     }
-    setMino({...mino});
+    setMino({ ...mino });
+    await draw(defaultField);
+  }, []);
+
+  const handleKeyUp = useCallback((e: KeyboardEvent) => {
+    pressedKeys.delete(e.key);
   }, []);
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
     };
-  }, [handleKeyDown]);
-
+  }, [handleKeyDown, handleKeyUp]);
 
   const createMino = async (): Promise<void> => {
     const pattern = await getRandomMinoId();
@@ -158,6 +167,7 @@ export default function useTetris() {
     mino.y = 1;
     setMino({ ...mino });
   };
+
   const draw = async (new_field:number[][]) => {
     const newField = new_field.map((row) => [...row]);
     mino.blocks.map((block:BlockType) => {
