@@ -1,5 +1,6 @@
-import BlockType from "@/types/blockType";
+import BlockType from "@/types/BlockType";
 import MinoType from "@/types/minoType";
+import defaultField from "@/lib/defaultField";
 import { useCallback, useEffect, useState } from "react";
 
 export default function useTetris() {
@@ -8,38 +9,13 @@ export default function useTetris() {
   const [mino, setMino] = useState<MinoType>({
     blocks: [],
     id: -2,
-    route: 0,
     x: 6,
     y: 1,
     color: "black",
     // speed: 1000,
     speed: 100,
   });
-  const defaultField = [
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1],
-    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-  ]
   const [field,setField] = useState<number[][]>(defaultField);
-
   const getRandomMinoId = async () => {
     return Math.floor(Math.random() * mino_count) + 1;
   }
@@ -92,7 +68,6 @@ export default function useTetris() {
         }
         break;
       case "j":
-        mino.route = (mino.route + 3) % 4;
         mino.blocks.forEach((block: BlockType) => {
           const tmp = block.x;
           block.x = block.y;
@@ -100,7 +75,6 @@ export default function useTetris() {
         });
         break;
       case "k":
-        mino.route = (mino.route + 1) % 4;
         mino.blocks.forEach((block: BlockType) => {
           const tmp = block.x;
           block.x = -block.y;
@@ -162,7 +136,6 @@ export default function useTetris() {
       default:
         break;
     }
-    mino.route = 0;
     mino.x = 6;
     mino.y = 1;
     setMino({ ...mino });
