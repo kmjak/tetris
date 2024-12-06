@@ -2,23 +2,20 @@ import BlockType from "@/types/BlockType";
 import MinoType from "@/types/minoType";
 import defaultField from "@/lib/defaultField";
 import { useCallback, useEffect, useState } from "react";
+import getMinoIDUC from "@/usecase/getMinoIDUC";
 
 export default function useTetris() {
-  const mino_count = 7;
   const pressedKeys = new Set<string>();
-  const [mino, setMino] = useState<MinoType>({
+  const [mino] = useState<MinoType>({
     blocks: [],
     id: -2,
     x: 6,
     y: 1,
     color: "black",
     // speed: 1000,
-    speed: 100,
+    speed: 300,
   });
   const [field,setField] = useState<number[][]>(defaultField);
-  const getRandomMinoId = async () => {
-    return Math.floor(Math.random() * mino_count) + 1;
-  }
 
   const isAlive = async (move:string):Promise<boolean> => {
     let res = true
@@ -48,63 +45,9 @@ export default function useTetris() {
     return res;
   }
 
-  const handleKeyDown = useCallback(async (e: KeyboardEvent) => {
-    if (pressedKeys.has(e.key)) return;
-    pressedKeys.add(e.key);
-    switch (e.key) {
-      case "s":
-        if (await isAlive("down")) {
-          mino.y++;
-        }
-        break;
-      case "a":
-        if (await isAlive("left")) {
-          mino.x--;
-        }
-        break;
-      case "d":
-        if (await isAlive("right")) {
-          mino.x++;
-        }
-        break;
-      case "j":
-        mino.blocks.forEach((block: BlockType) => {
-          const tmp = block.x;
-          block.x = block.y;
-          block.y = -tmp;
-        });
-        break;
-      case "k":
-        mino.blocks.forEach((block: BlockType) => {
-          const tmp = block.x;
-          block.x = -block.y;
-          block.y = tmp;
-        });
-        break;
-      default:
-        break;
-    }
-    setMino({ ...mino });
-    await draw(defaultField);
-  }, []);
-
-  const handleKeyUp = useCallback((e: KeyboardEvent) => {
-    pressedKeys.delete(e.key);
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyUp);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyUp);
-    };
-  }, [handleKeyDown, handleKeyUp]);
-
   const createMino = async (): Promise<void> => {
-    const pattern = await getRandomMinoId();
-    mino.id = pattern;
-    switch (pattern) {
+    mino.id = await getMinoIDUC();;
+    switch (mino.id) {
       case 1: // Iミノ
         mino.blocks = [{ x: -2, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 0 }, { x: 1, y: 0 }];
         mino.color = "cyan";
@@ -138,7 +81,6 @@ export default function useTetris() {
     }
     mino.x = 6;
     mino.y = 1;
-    setMino({ ...mino });
   };
 
   const draw = async (new_field:number[][]) => {
@@ -149,27 +91,80 @@ export default function useTetris() {
     setField(newField);
   }
 
+  const landing = async ():Promise<boolean> => {
+    if(await isAlive("down") === false) {
+      mino.blocks.map((block:BlockType) => {
+        defaultField[mino.y + block.y-1][mino.x + block.x] = -1;
+      });
+      return false;
+    }
+    return true;
+  }
+
   const startGame = async (isAliveMino:boolean) => {
     if(isAliveMino === false) {
       await createMino();
       isAliveMino = true;
     }
-    setField(defaultField);
+    isAliveMino = await landing();
+    if(isAliveMino){
     await draw(defaultField);
     mino.y++;
-    setMino({...mino});
+    }
     setTimeout(async () => {
-      if(await isAlive("down") === false) {
-        mino.blocks.map((block:BlockType) => {
-          defaultField[mino.y + block.y-1][mino.x + block.x] = -1;
-        });
-        setField(defaultField);
-        isAliveMino = false;
-      }
       await startGame(isAliveMino);
     }
     , mino.speed);
   }
+
+  const handleKeyDown = useCallback(async (e: KeyboardEvent) => {
+    if (pressedKeys.has(e.key)) return;
+    pressedKeys.add(e.key);
+    switch (e.key) {
+      case "a":
+        if (await isAlive("left") === false) {
+          return;
+        }
+        mino.x--;
+        break;
+      case "d":
+        if (await isAlive("right") === false) {
+          return;
+        }
+        mino.x++;
+        break;
+      case "j":
+        mino.blocks.forEach((block: BlockType) => {
+          const tmp = block.x;
+          block.x = block.y;
+          block.y = -tmp;
+        });
+        break;
+      case "k":
+        mino.blocks.forEach((block: BlockType) => {
+          const tmp = block.x;
+          block.x = -block.y;
+          block.y = tmp;
+        });
+        break;
+      default:
+        break;
+    }
+    await draw(defaultField);
+  }, []);
+
+  const handleKeyUp = useCallback((e: KeyboardEvent) => {
+    pressedKeys.delete(e.key);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [handleKeyDown, handleKeyUp]);
 
   return {
     field,
