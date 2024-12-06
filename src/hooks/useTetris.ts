@@ -83,6 +83,15 @@ export default function useTetris() {
     mino.y = 1;
   };
 
+  const eraseLine = async () => {
+    for (let i = 0; i < 20; i++) {
+      if (defaultField[i].every((cell) => cell !== 0)) {
+        defaultField.splice(i, 1);
+        defaultField.unshift([-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]);
+      }
+    }
+  }
+
   const draw = async (new_field:number[][]) => {
     const newField = new_field.map((row) => [...row]);
     mino.blocks.map((block:BlockType) => {
@@ -96,6 +105,7 @@ export default function useTetris() {
       mino.blocks.map((block:BlockType) => {
         defaultField[mino.y + block.y-1][mino.x + block.x] = -1;
       });
+      await eraseLine();
       return false;
     }
     return true;
