@@ -41,6 +41,26 @@ export default function useTetris() {
           }
         })
         break;
+      case "routeR":
+        const tmp = mino.blocks.map((block:BlockType) => {
+          return {x: block.y, y: -block.x};
+        });
+        tmp.map((block:BlockType) => {
+          if(defaultField[mino.y + block.y][mino.x + block.x] !== 0){
+            res = false;
+          }
+        });
+        break;
+      case "routeL":
+        const tmp2 = mino.blocks.map((block:BlockType) => {
+          return {x: -block.y, y: block.x};
+        });
+        tmp2.map((block:BlockType) => {
+          if(defaultField[mino.y + block.y][mino.x + block.x] !== 0){
+            res = false;
+          }
+        });
+        break;
     }
     return res;
   }
@@ -111,22 +131,6 @@ export default function useTetris() {
     return true;
   }
 
-  const startGame = async (isAliveMino:boolean) => {
-    if(isAliveMino === false) {
-      await createMino();
-      isAliveMino = true;
-    }
-    isAliveMino = await landing();
-    if(isAliveMino){
-    await draw(defaultField);
-    mino.y++;
-    }
-    setTimeout(async () => {
-      await startGame(isAliveMino);
-    }
-    , mino.speed);
-  }
-
   const handleKeyDown = useCallback(async (e: KeyboardEvent) => {
     if (pressedKeys.has(e.key)) return;
     pressedKeys.add(e.key);
@@ -144,6 +148,9 @@ export default function useTetris() {
         mino.x++;
         break;
       case "j":
+        if (await isAlive("routeR") === false) {
+          return;
+        }
         mino.blocks.forEach((block: BlockType) => {
           const tmp = block.x;
           block.x = block.y;
@@ -151,6 +158,9 @@ export default function useTetris() {
         });
         break;
       case "k":
+        if (await isAlive("routeL") === false) {
+          return;
+        }
         mino.blocks.forEach((block: BlockType) => {
           const tmp = block.x;
           block.x = -block.y;
@@ -175,6 +185,21 @@ export default function useTetris() {
       document.removeEventListener("keyup", handleKeyUp);
     };
   }, [handleKeyDown, handleKeyUp]);
+
+  const startGame = async (isAliveMino:boolean) => {
+    if(isAliveMino === false) {
+      await createMino();
+      isAliveMino = true;
+    }
+    isAliveMino = await landing();
+    if(isAliveMino){
+    await draw(defaultField);
+    mino.y++;
+    }
+    setTimeout(async () => {
+      await startGame(isAliveMino);
+    }, mino.speed);
+  }
 
   return {
     field,
