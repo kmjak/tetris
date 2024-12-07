@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { useEffect } from "react";
 
 export default function Play() {
-  const {field, startGame, mino} = useTetris();
+  const {field, startGame, mino, score} = useTetris();
   useEffect(() => {
     const start = async () => {
       await startGame(false);
@@ -13,6 +13,7 @@ export default function Play() {
   }, []);
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
+      <div className="text-2xl text-white">現在のスコア: {score}</div>
       <div className="pt-28">
         {field.map((row, y) => (
           <div
