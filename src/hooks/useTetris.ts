@@ -100,9 +100,24 @@ export default function useTetris() {
     return true;
   }
 
+  const isFinished = async ():Promise<boolean> => {
+    let res = false;
+    mino.blocks.map((block:BlockType) => {
+      if(defaultField[mino.y + block.y][mino.x + block.x] == -1){
+        res = true;
+      }
+    });
+    return res;
+  }
+
   const startGame = async (isAliveMino:boolean) => {
     if(isAliveMino === false) {
       await createMinoUC(mino);
+      if(await isFinished()){
+        alert("Game Over");
+        window.location.reload();
+        return;
+      }
       isAliveMino = true;
     }
     isAliveMino = await landing();
