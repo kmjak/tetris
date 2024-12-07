@@ -4,6 +4,7 @@ import defaultField from "@/lib/defaultField";
 import { useCallback, useEffect, useState } from "react";
 import createMinoUC from "@/usecase/createMinoUC";
 import isAliveUC from "@/usecase/isAliveUC";
+import calcScoreUC from "@/usecase/calcScoreUC";
 
 export default function useTetris() {
   const pressedKeys = new Set<string>();
@@ -16,6 +17,7 @@ export default function useTetris() {
     speed: 300,
   });
   const [field,setField] = useState<number[][]>(defaultField);
+  const [score,setScore] = useState<number>(0);
 
   const handleKeyDown = useCallback(async (e: KeyboardEvent) => {
     if (pressedKeys.has(e.key)) return;
@@ -73,12 +75,15 @@ export default function useTetris() {
   }, [handleKeyDown, handleKeyUp]);
 
   const eraseLine = async () => {
+    let cnt = 0;
     for (let i = 0; i < 20; i++) {
       if (defaultField[i].every((cell) => cell !== 0)) {
+        cnt++;
         defaultField.splice(i, 1);
         defaultField.unshift([-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-1]);
       }
     }
+    await calcScoreUC({setScore,lines:cnt});
   }
 
   const draw = async (new_field:number[][]) => {
@@ -133,6 +138,7 @@ export default function useTetris() {
   return {
     field,
     startGame,
+    score,
     mino,
   };
 }
