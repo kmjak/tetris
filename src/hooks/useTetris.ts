@@ -36,16 +36,6 @@ export default function useTetris() {
         mino.x++;
         break;
       case "j":
-        if (await isAliveUC("routeR",mino) === false) {
-          return;
-        }
-        mino.blocks.forEach((block: BlockType) => {
-          const tmp = block.x;
-          block.x = block.y;
-          block.y = -tmp;
-        });
-        break;
-      case "k":
         if (await isAliveUC("routeL",mino) === false) {
           return;
         }
@@ -53,6 +43,16 @@ export default function useTetris() {
           const tmp = block.x;
           block.x = -block.y;
           block.y = tmp;
+        });
+        break;
+      case "k":
+        if (await isAliveUC("routeR",mino) === false) {
+          return;
+        }
+        mino.blocks.forEach((block: BlockType) => {
+          const tmp = block.x;
+          block.x = block.y;
+          block.y = -tmp;
         });
         break;
       default:
@@ -134,6 +134,40 @@ export default function useTetris() {
       await startGame(isAliveMino);
     }, mino.speed);
   }
+
+  useEffect(() => {
+    if (score >= 9850) {
+      mino.speed = 10;
+    } else if (score >= 8750) {
+      mino.speed = 20;
+    } else if (score >= 7700) {
+      mino.speed = 40;
+    } else if (score >= 6700) {
+      mino.speed = 60;
+    } else if (score >= 5750) {
+      mino.speed = 80;
+    } else if (score >= 4850) {
+      mino.speed = 100;
+    } else if (score >= 4000) {
+      mino.speed = 120;
+    } else if (score >= 3200) {
+      mino.speed = 140;
+    } else if (score >= 2450) {
+      mino.speed = 160;
+    } else if (score >= 1750) {
+      mino.speed = 180;
+    } else if (score >= 1200) {
+      mino.speed = 200;
+    } else if (score >= 800) {
+      mino.speed = 220;
+    } else if (score >= 500) {
+      mino.speed = 240;
+    } else if (score >= 250) {
+      mino.speed = 260;
+    } else if (score >= 100) {
+      mino.speed = 280;
+    }
+  }, [score]);
 
   return {
     field,
